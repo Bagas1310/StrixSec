@@ -1,0 +1,49 @@
+# Runtime data must never be baked into the image
+.strixsec.db
+.strixsec_scope.json
+
+# Secrets
+.env
+.env.*
+*.secret*
+*.pem
+*.key
+
+# Local venv / caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.strixsec.db-*  # SQLite temp/wal/shm files
+
+# Build / packaging
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+
+# Reports (generated, not source)
+reports/*.json
+reports/*.html
+reports/*.md
+!reports/.gitkeep
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# CI artifacts not needed in image
+.github/
+
+# Docs not needed at runtime
+docs/

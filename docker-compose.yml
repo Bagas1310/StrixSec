@@ -1,0 +1,13 @@
+services:
+  strixsec:
+    build: .
+    image: strixsec:latest
+    # Persist runtime state (DB + scope) and reports outside the container.
+    # ponytail: host bind-mount is simplest for single-user dev; switch to named
+    # volumes if multi-container access is later required.
+    volumes:
+      - ./workspace:/data
+      - ./reports:/reports
+    working_dir: /data
+    # Override CMD at runtime: e.g. `strixsec scope add example.com`
+    command: ["--help"]

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# ponytail: tests do NOT require Docker — keeps CI fast & decoupled.
+# Job 2 builds + verifies the image but never pushes (no registry creds needed).
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install package + dev dependencies
+        run: pip install --disable-pip-version-check .[dev]
+      - name: Lint with ruff
+        run: ruff check .
+      - name: Format check with ruff
+        run: ruff format --check .
+      - name: Run tests
+        run: pytest -v
+
+  # Build verification only — ubuntu-latest ships Docker; no registry push.
+  docker:
+    name: Docker build verification
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image from Dockerfile
+        run: docker build -t strixsec:ci .
+      - name: Verify CLI runs inside container
+        run: |
+          docker run --rm strixsec:ci version
+          docker run --rm strixsec:ci --help
+          docker run --rm strixsec:ci report generate --help
+      - name: Verify no runtime DB baked into image
+        run: |
+          ! docker run --rm strixsec:ci ls /app/.strixsec.db 2>/dev/null || true
+          ! docker run --rm strixsec:ci ls /data/.strixsec.db 2>/dev/null || true

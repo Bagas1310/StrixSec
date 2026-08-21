@@ -1,0 +1,18 @@
+{
+  "project_name": "Example Assessment",
+  "organization": "StrixSec Security Labs",
+  "allowed_targets": [
+    "192.168.1.0/24",
+    "example.com",
+    "api.example.com"
+  ],
+  "excluded_targets": [
+    "192.168.1.1",
+    "prod-db.example.com"
+  ],
+  "authorization": {
+    "authorized_by": "Security Team Lead",
+    "ticket_ref": "SEC-2026-8842",
+    "valid_until": "2026-12-31"
+  }
+}
